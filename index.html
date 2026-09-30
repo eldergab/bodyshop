@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Industrial - Estação 10 (Linha Changan)</title>
+    <!-- Chart.js para Renderização dos Gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #121214;
+            --card-bg: #202024;
+            --text-color: #e1e1e6;
+            --accent-red: #f75a68;
+            --accent-orange: #ff9d00;
+            --accent-blue: #00b37e;
+            --accent-purple: #996dff;
+            --border-color: #323238;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            margin: 0 0 5px 0;
+            font-size: 1.8rem;
+            color: #ffffff;
+        }
+
+        .header p {
+            margin: 0;
+            color: #a8a8b3;
+            font-size: 0.95rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #00b37e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+            width: 100%;
+        }
+
+        .summary-table-card {
+            grid-column: 1 / -1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #29292e;
+            color: #00b37e;
+        }
+
+        tr:hover {
+            background-color: #29292e;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .badge-critical { background: rgba(247, 90, 104, 0.2); color: var(--accent-red); }
+        .badge-warning { background: rgba(255, 157, 0, 0.2); color: var(--accent-orange); }
+        .badge-info { background: rgba(153, 109, 255, 0.2); color: var(--accent-purple); }
+        .badge-success { background: rgba(0, 179, 126, 0.2); color: var(--accent-blue); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Análise de Produtividade e Ociosidade - Estação 10</h1>
+        <p>Projeção de Turno (8 Horas Trabalhadas) - Linha Changan C655</p>
+    </div>
+
+    <div class="dashboard-grid">
+
+        <!-- Gráfico 1: Produção Real em 8h -->
+        <div class="card">
+            <h2>📊 Produção de Assoalhos em 8 Horas (Peças)</h2>
+            <div class="chart-container">
+                <canvas id="chartProducao"></canvas>
+            </div>
+        </div>
+
+        <!-- Gráfico 2: Tempo Parado do Operador 621 -->
+        <div class="card">
+            <h2>⏱️ Tempo Parado do Operador da 621 em 8 Horas</h2>
+            <div class="chart-container">
+                <canvas id="chartTempoParado"></canvas>
+            </div>
+        </div>
+
+        <!-- Tabela Resumo -->
+        <div class="card summary-table-card">
+            <h2>📋 Quadro Comparativo dos 4 Cenários Operacionais</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cenário Operacional</th>
+                        <th>Condição da 619</th>
+                        <th>Operador 621</th>
+                        <th>Operador 619</th>
+                        <th>Produção / 8h</th>
+                        <th>Tempo Parado Operador 621</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1. Atual (Hoje)</strong></td>
+                        <td>6s / ponto</td>
+                        <td>Experiente</td>
+                        <td>Novato</td>
+                        <td><strong>61 peças</strong></td>
+                        <td>3h 04min (38%)</td>
+                        <td><span class="status-badge badge-critical">Crítico</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>2. Dois Experientes</strong></td>
+                        <td>6s / ponto</td>
+                        <td>Experiente</td>
+                        <td>Experiente</td>
+                        <td><strong>82 peças</strong></td>
+                        <td>2h 48min (35%)</td>
+                        <td><span class="status-badge badge-warning">Atrasado</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>3. Inverter Postos</strong></td>
+                        <td>6s / ponto</td>
+                        <td>Novato</td>
+                        <td>Experiente</td>
+                        <td><strong>82 peças</strong></td>
+                        <td>1h 10min (15%)</td>
+                        <td><span class="status-badge badge-info">Melhoria Operacional</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>4. Corrigir 619 (Meta)</strong></td>
+                        <td>3s / ponto</td>
+                        <td>Experiente</td>
+                        <td>Experiente</td>
+                        <td><strong>137 peças</strong></td>
+                        <td>0h 18min (4%)</td>
+                        <td><span class="status-badge badge-success">Ideal / Equilibrado</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        // Configurações e Dados
+        const cenarios = [
+            '1. Hoje (Novato 619)',
+            '2. Dois Experientes',
+            '3. Inverter (Novato 621)',
+            '4. Corrigir 619 (3s)'
+        ];
+
+        const producaoData = [61, 82, 82, 137]; // em peças
+        const tempoParadoData = [3.06, 2.80, 1.16, 0.30]; // em horas decimais (3h04, 2h48, 1h10, 0h18)
+        const tempoParadoFormatado = ['3h 04m', '2h 48m', '1h 10m', '0h 18m'];
+
+        const coresGradiente = ['#f75a68', '#ff9d00', '#996dff', '#00b37e'];
+
+        // Configuração Padrão de Estilo do Chart.js
+        Chart.defaults.color = '#a8a8b3';
+        Chart.defaults.font.family = "'Segoe UI', sans-serif";
+
+        // 1. Gráfico de Produção
+        const ctxProducao = document.getElementById('chartProducao').getContext('2d');
+        new Chart(ctxProducao, {
+            type: 'bar',
+            data: {
+                labels: cenarios,
+                datasets: [{
+                    label: 'Peças Produzidas / 8h',
+                    data: producaoData,
+                    backgroundColor: coresGradiente,
+                    borderRadius: 6,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#323238' },
+                        title: { display: true, text: 'Nº de Peças' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // 2. Gráfico de Tempo Parado do Operador 621
+        const ctxTempoParado = document.getElementById('chartTempoParado').getContext('2d');
+        new Chart(ctxTempoParado, {
+            type: 'bar',
+            data: {
+                labels: cenarios,
+                datasets: [{
+                    label: 'Horas Paradas no Turno',
+                    data: tempoParadoData,
+                    backgroundColor: coresGradiente,
+                    borderRadius: 6,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Tempo parado: ' + tempoParadoFormatado[context.dataIndex];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 4,
+                        grid: { color: '#323238' },
+                        title: { display: true, text: 'Horas Paradas (h)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
