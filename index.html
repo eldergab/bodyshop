@@ -3,71 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório de Impacto - Estação 10 (Linha Changan)</title>
+    <title>Diagnóstico Operacional - Estação 10 (Linha Changan)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
+            --bg-color: #0b0f19;
+            --card-bg: #151c2c;
+            --card-border: #232d42;
+            --text-main: #f1f5f9;
             --text-muted: #94a3b8;
             --red-alert: #ef4444;
             --amber-warn: #f59e0b;
             --green-ok: #10b981;
             --blue-info: #3b82f6;
-            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            margin: 0;
-            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 15px;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            width: 100%;
+            flex: 1;
         }
 
         /* Cabeçalho */
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .header h1 {
-            font-size: 1.8rem;
-            margin: 0 0 5px 0;
+            font-size: clamp(1.4rem, 4vw, 2.1rem);
             color: #ffffff;
+            margin-bottom: 8px;
+            font-weight: 700;
         }
 
         .header p {
             color: var(--text-muted);
-            margin: 0;
+            font-size: clamp(0.85rem, 2vw, 1rem);
         }
 
-        /* Sistema de Abas */
+        /* Navegação por Abas */
         .tab-buttons {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
         }
 
         .tab-btn {
             background-color: var(--card-bg);
             color: var(--text-muted);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--card-border);
             padding: 12px 24px;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .tab-btn:hover {
@@ -79,54 +92,75 @@
             background-color: var(--blue-info);
             color: #ffffff;
             border-color: var(--blue-info);
-            box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
         }
 
         .tab-content {
             display: none;
+            animation: fadeIn 0.3s ease-in-out;
         }
 
         .tab-content.active {
             display: block;
         }
 
-        /* Cartões de Impacto (Aba Leigo) */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Banner de Destaque */
         .hero-banner {
-            background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%);
-            border: 1px solid var(--red-alert);
-            border-radius: 12px;
-            padding: 25px;
+            background: linear-gradient(135deg, #450a0a 0%, #1e1b4b 100%);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 14px;
+            padding: clamp(20px, 4vw, 35px);
             text-align: center;
             margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.2);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
         }
 
         .hero-banner h2 {
-            margin: 0 0 10px 0;
-            font-size: 1.5rem;
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
             color: #fca5a5;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
         }
 
         .hero-banner .huge-number {
-            font-size: 3.5rem;
+            font-size: clamp(2.5rem, 7vw, 4.2rem);
             font-weight: 800;
             color: #ffffff;
-            margin: 10px 0;
+            line-height: 1.1;
+            margin: 12px 0;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
+        .hero-banner p {
+            color: #cbd5e1;
+            font-size: clamp(0.9rem, 2vw, 1.05rem);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Cards de Impacto */
         .impact-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
         .impact-card {
             background-color: var(--card-bg);
-            border-radius: 10px;
-            padding: 20px;
-            border-left: 5px solid var(--border-color);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 22px;
+            border: 1px solid var(--card-border);
+            border-left-width: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .impact-card.danger { border-left-color: var(--red-alert); }
@@ -134,80 +168,121 @@
         .impact-card.success { border-left-color: var(--green-ok); }
 
         .impact-card h3 {
-            margin: 0 0 10px 0;
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 500;
         }
 
         .impact-card .val {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-size: clamp(1.8rem, 4vw, 2.2rem);
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.2;
         }
 
         .impact-card .sub {
-            font-size: 0.85rem;
-            color: var(--text-muted);
+            font-size: 0.88rem;
+            color: #94a3b8;
+            line-height: 1.4;
         }
 
-        /* Layout de Gráficos e Tabelas (Aba Engenharia) */
+        /* Aba 2: Gráficos e Tabelas */
         .grid-2 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .card {
             background-color: var(--card-bg);
-            border-radius: 10px;
-            padding: 20px;
-            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 22px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .card h3 {
-            margin-top: 0;
             color: var(--blue-info);
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             text-align: center;
+            margin-bottom: 18px;
+            font-weight: 600;
         }
 
         .chart-box {
             position: relative;
-            height: 300px;
+            height: 280px;
+            width: 100%;
+        }
+
+        /* Tabela Responsiva */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9rem;
-            margin-top: 10px;
+            font-size: 0.88rem;
+            min-width: 650px;
         }
 
         th, td {
-            padding: 12px 10px;
+            padding: 12px 14px;
             text-align: center;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--card-border);
         }
 
         th {
             background-color: #0f172a;
-            color: var(--blue-info);
+            color: #60a5fa;
+            font-weight: 600;
         }
 
         tr:hover {
-            background-color: #334155;
+            background-color: #1e293b;
         }
 
         .badge {
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 700;
             font-size: 0.75rem;
+            display: inline-block;
         }
-        .badge-red { background: rgba(239, 68, 68, 0.2); color: var(--red-alert); }
-        .badge-amber { background: rgba(245, 158, 11, 0.2); color: var(--amber-warn); }
-        .badge-green { background: rgba(16, 185, 129, 0.2); color: var(--green-ok); }
+        .badge-red { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-amber { background: rgba(245, 158, 11, 0.2); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-green { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        /* Rodapé Profissional */
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--card-border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            line-height: 1.6;
+        }
+
+        footer .disclaimer {
+            background-color: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 12px 18px;
+            max-width: 900px;
+            margin: 0 auto 15px auto;
+            color: #cbd5e1;
+        }
+
+        footer .copyright {
+            font-weight: 500;
+            color: #94a3b8;
+        }
     </style>
 </head>
 <body>
@@ -219,44 +294,44 @@
         <p>Análise de gargalo na Ponteadeira 619 e ociosidade no posto</p>
     </div>
 
-    <!-- Abas de Navegação -->
+    <!-- Navegação por Abas -->
     <div class="tab-buttons">
-        <button class="tab-btn active" onclick="switchTab('resumo')">🚨 Resumo Executivo (Visão Geral)</button>
-        <button class="tab-btn" onclick="switchTab('engenharia')">📊 Saiba Mais (Detalhamento Técnico)</button>
+        <button class="tab-btn active" onclick="switchTab(event, 'resumo')">🚨 Resumo Executivo (Visão Geral)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'engenharia')">📊 Saiba Mais (Detalhamento Técnico)</button>
     </div>
 
-    <!-- ABA 1: RESUMO EXECUÇÃO (LEIGO) -->
+    <!-- ABA 1: RESUMO EXECUTIVO -->
     <div id="resumo" class="tab-content active">
         
         <div class="hero-banner">
             <h2>IMPACTO TOTAL DO ERRO NA PONTEADEIRA 619</h2>
             <div class="huge-number">- 1.430 Peças / Mês</div>
-            <p>A fábrica deixa de montar mais de 1.400 assoalhos centrais todos os meses unicamente pelo atraso na 619.</p>
+            <p>A fábrica deixa de montar mais de 1.400 assoalhos centrais todos os meses unicamente pelo atraso no parâmetro da 619.</p>
         </div>
 
         <div class="impact-grid">
             <div class="impact-card danger">
                 <h3>Prejuízo em Peças (Perda de Produção)</h3>
                 <div class="val" style="color: var(--red-alert);">- 65 Peças / Dia</div>
-                <div class="sub">Em 8h de trabalho (Cenário de Hoje: Novato na 619 + Experiente na 621).</div>
+                <div class="sub">Em 8h de trabalho no cenário atual (Novato na 619 + Experiente na 621).</div>
             </div>
 
             <div class="impact-card warning">
                 <h3>Desperdício de Mão de Obra</h3>
                 <div class="val" style="color: var(--amber-warn);">4h 05min Parado</div>
-                <div class="sub">Tempo que o operador da 621 passa **de braços cruzados** em um turno de 8h esperando a 619.</div>
+                <div class="sub">Tempo que o operador da 621 passa de braços cruzados em um turno de 8h aguardando a 619.</div>
             </div>
 
             <div class="impact-card success">
                 <h3>Potencial se Corrigir a 619 (3s)</h3>
                 <div class="val" style="color: var(--green-ok);">146 Peças / Dia</div>
-                <div class="sub">A produção salta de 81 para 146 peças/turno sem precisar contratar ninguém.</div>
+                <div class="sub">A produção salta de 81 para 146 peças/turno com a mesma equipe e sem horas extras.</div>
             </div>
         </div>
 
     </div>
 
-    <!-- ABA 2: ENGENHARIA E GRÁFICOS (DETALHADO) -->
+    <!-- ABA 2: DETALHAMENTO TÉCNICO -->
     <div id="engenharia" class="tab-content">
         
         <div class="grid-2">
@@ -277,61 +352,73 @@
 
         <div class="card">
             <h3>Tabela de Engenharia de Processos</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Cenário Operacional</th>
-                        <th>Tempo 619</th>
-                        <th>Tempo Ciclo Total</th>
-                        <th>Peças / Turno (8h)</th>
-                        <th>Tempo Parado Operador 621</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>1. Atual (Experiente 621 + Novato 619)</strong></td>
-                        <td>7,5s / ponto</td>
-                        <td>353,5 s (5m 53s)</td>
-                        <td><strong>81 peças</strong></td>
-                        <td>4h 05min (51% do turno)</td>
-                        <td><span class="badge badge-red">Crítico</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>2. Dois Experientes (619 Desregulada)</strong></td>
-                        <td>6,0s / ponto</td>
-                        <td>295,0 s (4m 55s)</td>
-                        <td><strong>97 peças</strong></td>
-                        <td>3h 18min (41% do turno)</td>
-                        <td><span class="badge badge-amber">Gargalo</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>3. Inverter (Novato 621 + Experiente 619)</strong></td>
-                        <td>6,0s / ponto</td>
-                        <td>295,0 s (4m 55s)</td>
-                        <td><strong>97 peças</strong></td>
-                        <td>1h 10min (14% do turno)</td>
-                        <td><span class="badge badge-amber">Melhoria de Distribuição</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>4. Corrigido (619 Regulada a 3s)</strong></td>
-                        <td>3,0s / ponto</td>
-                        <td>166,0 s (2m 46s)</td>
-                        <td><strong>173 peças</strong></td>
-                        <td>0h 18min (4% do turno)</td>
-                        <td><span class="badge badge-green">Ideal</span></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cenário Operacional</th>
+                            <th>Tempo 619</th>
+                            <th>Tempo Ciclo Total</th>
+                            <th>Peças / Turno (8h)</th>
+                            <th>Tempo Parado Operador 621</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1. Atual (Experiente 621 + Novato 619)</strong></td>
+                            <td>7,5s / ponto</td>
+                            <td>353,5 s (5m 53s)</td>
+                            <td><strong>81 peças</strong></td>
+                            <td>4h 05min (51% do turno)</td>
+                            <td><span class="badge badge-red">Crítico</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>2. Dois Experientes (619 Desregulada)</strong></td>
+                            <td>6,0s / ponto</td>
+                            <td>295,0 s (4m 55s)</td>
+                            <td><strong>97 peças</strong></td>
+                            <td>3h 18min (41% do turno)</td>
+                            <td><span class="badge badge-amber">Gargalo</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>3. Inverter (Novato 621 + Experiente 619)</strong></td>
+                            <td>6,0s / ponto</td>
+                            <td>295,0 s (4m 55s)</td>
+                            <td><strong>97 peças</strong></td>
+                            <td>1h 10min (14% do turno)</td>
+                            <td><span class="badge badge-amber">Melhoria Temporária</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>4. Corrigido (619 Regulada a 3s)</strong></td>
+                            <td>3,0s / ponto</td>
+                            <td>166,0 s (2m 46s)</td>
+                            <td><strong>173 peças</strong></td>
+                            <td>0h 18min (4% do turno)</td>
+                            <td><span class="badge badge-green">Ideal</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </div>
 
 </div>
 
+<!-- Rodapé Profissional -->
+<footer>
+    <div class="disclaimer">
+        <strong>Nota de Isenção de Responsabilidade:</strong> Os cálculos e projeções apresentados neste diagnóstico são baseados em parâmetros operacionais simples e estimativas práticas fornecidas pela visão do ponteador do turno. Para estudos formais de cronoanálise e validação de capacidade, consulte a Engenharia de Processos da empresa.
+    </div>
+    <div class="copyright">
+        Todos os direitos reservados a <strong>Emerson Charles Gabriel</strong> &copy; 2026
+    </div>
+</footer>
+
 <script>
     // Alternar Abas
-    function switchTab(tabId) {
+    function switchTab(event, tabId) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
         
@@ -339,10 +426,10 @@
         event.currentTarget.classList.add('active');
     }
 
-    // Inicialização dos Gráficos em Chart.js
+    // Configuração dos Gráficos em Chart.js
     const cenarios = ['1. Hoje (Novato 619)', '2. 2 Experientes', '3. Inverter Postos', '4. Corrigido (3s)'];
 
-    // Gráfico de Produção
+    // Chart Produção
     new Chart(document.getElementById('chartProducao'), {
         type: 'bar',
         data: {
@@ -359,20 +446,20 @@
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: true, grid: { color: '#334155' } },
+                y: { beginAtZero: true, grid: { color: '#232d42' } },
                 x: { grid: { display: false } }
             }
         }
     });
 
-    // Gráfico de Ociosidade
+    // Chart Ociosidade
     new Chart(document.getElementById('chartOciosidade'), {
         type: 'bar',
         data: {
             labels: cenarios,
             datasets: [{
                 label: 'Horas Paradas em 8h',
-                data: [4.08, 3.30, 1.16, 0.30], // em horas decimais (4h05m, 3h18m, 1h10m, 0h18m)
+                data: [4.08, 3.30, 1.16, 0.30],
                 backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
                 borderRadius: 6
             }]
@@ -382,7 +469,7 @@
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: true, max: 5, grid: { color: '#334155' } },
+                y: { beginAtZero: true, max: 5, grid: { color: '#232d42' } },
                 x: { grid: { display: false } }
             }
         }
